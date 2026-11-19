@@ -1,4 +1,4 @@
-var V='liftlog-v12',SHELL=['./','index.html','sync-config.js','manifest.json','icon-192.png','icon-512.png','icon.svg'];
+var V='liftlog-v14',SHELL=['./','index.html','manifest.json','icon-192.png','icon-512.png','icon.svg'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(V).then(function(c){return c.addAll(SHELL);}).then(function(){return self.skipWaiting();}));});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(n){return n!==V;}).map(function(n){return caches.delete(n);}));}).then(function(){return self.clients.claim();}));});
 self.addEventListener('fetch',function(e){
