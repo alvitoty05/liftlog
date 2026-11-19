@@ -1468,6 +1468,27 @@ function extraInput(t){
 var THEMES=[['blue','Blue','#1D5FD1'],['green','Green','#167A47'],['orange','Orange','#A84800'],['purple','Purple','#6B3FD0'],['pink','Pink','#C2255C'],['red','Red','#C62828'],['teal','Teal','#00796B'],['slate','Slate','#374151']];
 var lookSet=false;
 function themeOk(k){return THEMES.some(function(t){return t[0]===k;});}
+var iconMan=null,iconBlob='';
+function iconFor(t){
+  try{
+    t=t||'blue';
+    var a=document.querySelector('link[rel="apple-touch-icon"]'),ml=document.querySelector('link[rel="manifest"]');
+    if(!a||!ml||location.protocol.indexOf('http')!==0)return;
+    a.setAttribute('href','ic-'+t+'-180.png');
+    var f=document.querySelector('link[rel="icon"]');if(f){f.setAttribute('href','ic-'+t+'-180.png');f.setAttribute('type','image/png');}
+    var build=function(m){
+      var o=JSON.parse(JSON.stringify(m));
+      ['start_url','scope','id'].forEach(function(k){if(o[k])o[k]=new URL(o[k],location.href).href;});
+      var u=new URL('ic-'+t+'-512.png',location.href).href;
+      o.icons=[{src:u,sizes:'512x512',type:'image/png',purpose:'any'},{src:u,sizes:'512x512',type:'image/png',purpose:'maskable'}];
+      var c=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();if(c)o.theme_color=c;
+      var url=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/manifest+json'}));
+      ml.setAttribute('href',url);if(iconBlob)URL.revokeObjectURL(iconBlob);iconBlob=url;
+    };
+    if(iconMan)build(iconMan);
+    else fetch('manifest.json',{cache:'no-cache'}).then(function(r){return r.json();}).then(function(m){iconMan=m;build(m);}).catch(function(){});
+  }catch(e){}
+}
 function applyTheme(){
   var r=document.documentElement;
   try{
@@ -1476,6 +1497,7 @@ function applyTheme(){
     else if(lookSet&&mode!=='db'){r.removeAttribute('data-theme');lookSet=false;}
     var m=document.querySelector('meta[name="theme-color"]');
     if(m){var c=getComputedStyle(r).getPropertyValue('--accent').trim();if(c)m.setAttribute('content',c);}
+    iconFor(theme);
   }catch(e){}
 }
 function mergeGone(g){
