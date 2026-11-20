@@ -149,6 +149,10 @@ input::placeholder{color:var(--ink-3)}
 .ghost.armed{color:var(--danger);border-color:var(--danger)}
 .dangerzone{margin-top:28px;display:flex;justify-content:center}
 .fig{display:block;width:100%;height:auto;background:var(--inset);border-radius:8px}
+.animfig{max-width:260px;margin:0 auto}
+.demo-fig{min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.animbtn{font:600 13px var(--body);color:var(--ink-2);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 14px;min-height:36px;cursor:pointer}
+.animbtn:hover{color:var(--ink);border-color:var(--ink-3)}
 .fig .fl{stroke:var(--line);stroke-width:1.5}
 .fig .num{fill:var(--ink-3);font:600 9px var(--body)}
 .fig .limb{stroke:var(--ink);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
@@ -405,7 +409,7 @@ var ES={
 'Reps':'Repeticiones','Date':'Fecha','Note (optional)':'Nota (opcional)','Log set':'Registrar serie','View in Log':'Ver en el registro',
 'Best set':'Mejor serie','Pin':'Clavija','Plate {p} of {n}':'Placa {p} de {n}','Est. 1RM':'1RM est.','Last lifted':'Último levantamiento','Sessions':'Sesiones',
 'Progress ({u}, top set per session)':'Progreso ({u}, mejor serie por sesión)','Log sets on a second day to see your trend.':'Registra series otro día para ver tu tendencia.',
-'Hide overview':'Ocultar resumen','See overview':'Ver resumen','History':'Historial',
+'Hide overview':'Ocultar resumen','Pause animation':'Pausar animación','Play animation':'Reproducir animación','animated demo':'demostración animada','See overview':'Ver resumen','History':'Historial',
 'Sure? Deletes {n} set':'¿Seguro? Borra {n} serie','Sure? Deletes {n} sets':'¿Seguro? Borra {n} series','Delete day':'Borrar día',
 'Tap again to delete this lift and its history':'Toca otra vez para borrar este ejercicio y su historial','Delete this lift':'Borrar este ejercicio',
 'Pages':'Páginas','Workouts':'Entrenos','Log':'Registro','Routines':'Rutinas','Stats':'Progreso','Tools':'Útiles',
@@ -828,6 +832,93 @@ PT('legraise','Lower abs=Abdomen inferior, Hip flexors=Flexores de cadera');
 PT('hangknee','Lower abs=Abdomen inferior, Hip flexors=Flexores de cadera, Grip=Agarre');
 PT('revcrunch','Lower abs=Abdomen inferior, Rectus abdominis=Recto abdominal');
 PT('woodchop','Obliques=Oblicuos, Deep core=Core profundo');
+/* cable and machine versions of dumbbell lifts: reuse a drawn pose set when the movement matches, or give new poses */
+var LOWG=Ln(88,50,88,70)+Rc(84,62,8,8),LOWA=[88,66],BACKG=Ln(8,-14,8,70)+Rc(5,22,6,8),BACKA=[8,26];
+function cab(id,src,en,es,g,cue,cuees,parts,o){
+  var s=src?LIBMAP[src]:{};if(src&&!s)return;o=o||{};
+  var gr=o.gear!==undefined?o.gear:(s.gear!==undefined?s.gear:'');
+  if(o.gearAdd)gr=Array.isArray(gr)?gr.map(function(x){return x+o.gearAdd;}):(gr||'')+o.gearAdd;
+  var an=o.anchor!==undefined?o.anchor:(s.anchor||null);
+  addLib(id,en,es,g,o.kind||'stack',o.hold||'handle',an,gr,o.poses||s.poses,cue,cuees);
+  PT(id,parts);
+  var fr=o.front!==undefined?o.front:s.front;if(fr)LIBMAP[id].front=true;
+}
+/* chest */
+cab('cablechestpress',null,'Standing cable chest press','Press de pecho en polea de pie',0,'Set both cables at chest height behind you and step forward. Press the handles out until your arms are straight, then return slowly.','Pon las dos poleas a la altura del pecho detrás de ti y da un paso al frente. Empuja los agarres hasta estirar los brazos y vuelve despacio.','Middle chest=Pecho medio, Front delts=Deltoides anterior, Triceps=Tríceps',{anchor:BACKA,gear:BACKG,poses:[[50,14,42,30,46,26,50,38,51,54,50,70],[50,14,58,28,70,26,50,38,51,54,50,70]]});
+cab('singlecablepress','cablechestpress','Single-arm cable chest press','Press de pecho en polea a una mano',0,'Stand sideways to the cable with the handle at chest height. Press it straight out, resisting the twist, then return slowly.','Ponte de lado a la polea con el agarre a la altura del pecho. Empújalo recto hacia delante sin dejar que el torso gire y vuelve despacio.','Middle chest=Pecho medio, Front delts=Deltoides anterior, Deep core=Core profundo');
+cab('inclinemachine','chestpress','Incline chest press machine','Press de pecho inclinado en máquina',0,'Set the seat so the handles line up with your upper chest. Press up and forward until your arms are straight.','Ajusta el asiento para que los agarres queden a la altura de la parte alta del pecho. Empuja hacia arriba y adelante hasta estirar los brazos.','Upper chest=Pecho superior, Front delts=Deltoides anterior, Triceps=Tríceps',{poses:[[32,34,28,46,40,36,30,58,50,56,50,70],[32,34,46,32,60,22,30,58,50,56,50,70]]});
+cab('declinemachine','chestpress','Decline chest press machine','Press de pecho declinado en máquina',0,'Sit with the handles near your lower chest. Press forward and slightly down, then return with control.','Siéntate con los agarres cerca de la parte baja del pecho. Empuja hacia delante y un poco abajo y vuelve con control.','Lower chest=Pecho inferior, Triceps=Tríceps, Front delts=Deltoides anterior',{poses:[[32,34,28,42,40,40,30,58,50,56,50,70],[32,34,48,42,66,50,30,58,50,56,50,70]]});
+cab('midfly',null,'Standing cable fly','Aperturas en polea de pie',0,'Set the cables at chest height. With soft elbows, sweep your hands forward and together as if hugging a tree.','Pon las poleas a la altura del pecho. Con los codos suaves, lleva las manos hacia delante y júntalas como abrazando un árbol.','Middle chest=Pecho medio, Inner chest=Pecho interno, Front delts=Deltoides anterior',{anchor:BACKA,gear:BACKG,poses:[[50,14,44,26,38,22,50,38,51,54,50,70],[50,14,58,26,68,26,50,38,51,54,50,70]]});
+cab('smithbench','bench','Smith machine bench press','Press de banca en máquina Smith',0,'Slide the bench so the bar lines up with your mid chest. Lower the bar to your chest, then press it up along the rails.','Coloca el banco para que la barra quede sobre la mitad del pecho. Baja la barra al pecho y empújala hacia arriba por los rieles.','Middle chest=Pecho medio, Front delts=Deltoides anterior, Triceps=Tríceps',{kind:'free',hold:'bar'});
+cab('smithincline','inclinepress','Smith machine incline press','Press inclinado en máquina Smith',0,'Set the bench at a slight incline under the bar. Lower to your upper chest and press up along the rails.','Pon el banco con una ligera inclinación bajo la barra. Baja a la parte alta del pecho y empuja hacia arriba por los rieles.','Upper chest=Pecho superior, Front delts=Deltoides anterior, Triceps=Tríceps',{kind:'free',hold:'bar'});
+/* back */
+cab('widepull','pulldown','Wide-grip lat pulldown','Jalón al pecho con agarre ancho',1,'Take the bar wider than your shoulders. Pull your elbows down toward your ribs and bring the bar to your upper chest.','Toma la barra más ancha que los hombros. Lleva los codos hacia las costillas y baja la barra hasta la parte alta del pecho.','Lats (upper)=Dorsales (parte alta), Teres major=Redondo mayor, Biceps=Bíceps');
+cab('closepull','pulldown','Close-grip lat pulldown','Jalón al pecho con agarre cerrado',1,'Use the V-handle and sit tall. Pull it to your chest with your elbows close to your body.','Usa el agarre en V y siéntate derecho. Llévalo al pecho con los codos cerca del cuerpo.','Lats (lower)=Dorsales (parte baja), Biceps=Bíceps, Rhomboids=Romboides');
+cab('revpull','pulldown','Reverse-grip lat pulldown','Jalón al pecho con agarre supino',1,'Hold the bar with your palms facing you, hands shoulder-width. Pull it to your upper chest, then let it rise slowly.','Toma la barra con las palmas hacia ti y las manos al ancho de los hombros. Bájala a la parte alta del pecho y déjala subir despacio.','Lats (lower)=Dorsales (parte baja), Biceps=Bíceps, Rhomboids=Romboides');
+cab('singlepull','pulldown','Single-arm lat pulldown','Jalón al pecho a una mano',1,'Hold one handle and sit tall. Pull your elbow down and back to your side, then reach up to stretch.','Toma un agarre y siéntate derecho. Lleva el codo abajo y atrás hacia el costado y estira el brazo hacia arriba.','Lats (full)=Dorsal (completo), Teres major=Redondo mayor, Biceps=Bíceps');
+cab('assistedpullup','pullup','Assisted pull-up machine','Dominadas asistidas en máquina',1,'Kneel on the pad. A heavier stack gives more help, so lower the weight as you get stronger. Pull your chest to the bar.','Arrodíllate en la plataforma. Más peso en la pila da más ayuda, así que bájalo a medida que te fortaleces. Sube el pecho hacia la barra.','Lats (full)=Dorsal (completo), Biceps=Bíceps, Grip=Agarre',{hold:'none'});
+cab('cableshrug','shrug','Cable shrug','Encogimientos en polea',1,'Stand over a low cable with a handle in each hand. Shrug straight up toward your ears, pause, and lower slowly.','Ponte sobre una polea baja con un agarre en cada mano. Sube los hombros hacia las orejas, pausa y baja despacio.','Upper traps=Trapecio superior, Grip=Agarre');
+cab('machinepullover',null,'Machine pullover','Pullover en máquina',1,'Sit with your elbows on the pads. Pull the bar over and down toward your hips with your lats, then return slowly.','Siéntate con los codos sobre los cojines. Lleva la barra hacia arriba y abajo hasta la cadera con los dorsales y vuelve despacio.','Lats (full)=Dorsal (completo), Teres major=Redondo mayor, Chest=Pecho',{gear:SEATBACK,poses:[[32,34,36,14,38,2,30,58,50,56,50,70],[32,34,48,36,52,50,30,58,50,56,50,70]]});
+cab('highrow',null,'Machine high row','Remo alto en máquina',1,'Sit with your chest on the pad and grab the handles above your shoulders. Pull your elbows down and back, then return slowly.','Siéntate con el pecho en el cojín y toma los agarres sobre los hombros. Lleva los codos abajo y atrás y vuelve despacio.','Lats (upper)=Dorsales (parte alta), Rhomboids=Romboides, Rear delts=Deltoides posterior',{gear:SEATBACK,poses:[[32,34,50,22,64,18,30,58,50,56,50,70],[32,34,30,38,42,30,30,58,50,56,50,70]]});
+/* shoulders */
+cab('cablelateral','lateral','Cable lateral raise','Elevaciones laterales en polea',3,'Stand sideways to a low cable and hold the handle with the far hand. Raise your arm out to shoulder height, then lower slowly.','Ponte de lado a una polea baja y toma el agarre con la mano lejana. Sube el brazo hasta la altura del hombro y baja despacio.','Side delts=Deltoides lateral, Traps=Trapecio');
+cab('cablefront',null,'Cable front raise','Elevaciones frontales en polea',3,'Face away from a low cable. Raise the handle in front of you to shoulder height with a straight arm, then lower slowly.','Date la vuelta a una polea baja. Sube el agarre frente a ti hasta la altura del hombro con el brazo recto y baja despacio.','Front delts=Deltoides anterior, Upper chest=Pecho superior',{anchor:LOWA,gear:LOWG,poses:[[50,14,52,28,54,42,50,38,51,54,50,70],[50,14,57,26,68,16,50,38,51,54,50,70]]});
+cab('cableupright','uprightrow','Cable upright row','Remo al mentón en polea',3,'Stand at a low cable with a bar or rope. Pull it up along your body to chest height, elbows leading, then lower slowly.','Ponte frente a una polea baja con barra o cuerda. Súbela pegada al cuerpo hasta el pecho, guiando con los codos, y baja despacio.','Side delts=Deltoides lateral, Upper traps=Trapecio superior, Biceps=Bíceps',{anchor:LOWA,gear:LOWG});
+cab('cabley',null,'Cable Y-raise','Elevación en Y en polea',3,'Stand facing a low cable. Raise the handle up and forward in a Y shape to above your head, then lower slowly.','De frente a una polea baja, sube el agarre hacia arriba y adelante formando una Y sobre la cabeza y baja despacio.','Rear delts=Deltoides posterior, Lower traps=Trapecio inferior, Side delts=Deltoides lateral',{anchor:LOWA,gear:LOWG,poses:[[50,14,52,28,54,42,50,38,51,54,50,70],[50,14,60,8,66,-4,50,38,51,54,50,70]]});
+cab('singlecableohp','ohp','Single-arm cable shoulder press','Press de hombro en polea a una mano',3,'Stand with a low cable handle at your shoulder. Press straight overhead, keeping your ribs down, then lower with control.','De pie con el agarre de una polea baja en el hombro, empuja recto sobre la cabeza sin arquear la espalda y baja con control.','Front delts=Deltoides anterior, Side delts=Deltoides lateral, Triceps=Tríceps',{anchor:LOWA,gear:LOWG});
+cab('cablereversefly','reversefly','Cable rear delt fly','Pájaros en polea',3,'Cross the cables at shoulder height and hold the opposite handles. Pull your arms apart with soft elbows, then return slowly.','Cruza las poleas a la altura de los hombros y toma los agarres contrarios. Abre los brazos con los codos suaves y vuelve despacio.','Rear delts=Deltoides posterior, Rhomboids=Romboides, Traps=Trapecio');
+cab('smithohp','ohp','Smith machine shoulder press','Press de hombros en máquina Smith',3,'Sit with the bar at chin height. Press up along the rails until your arms are straight, then lower slowly.','Siéntate con la barra a la altura de la barbilla. Empuja hacia arriba por los rieles hasta estirar los brazos y baja despacio.','Front delts=Deltoides anterior, Side delts=Deltoides lateral, Triceps=Tríceps',{kind:'free',hold:'bar'});
+/* biceps */
+cab('machinecurl','preacher','Machine biceps curl','Curl de bíceps en máquina',4,'Sit with your upper arms flat on the pad. Curl the handles up, squeeze, and lower until your arms are almost straight.','Siéntate con la parte alta de los brazos apoyada en el cojín. Sube los agarres, aprieta y baja hasta casi estirar los brazos.','Biceps (peak)=Bíceps (pico), Brachialis=Braquial');
+cab('cablepreacher','preacher','Cable preacher curl','Curl predicador en polea',4,'Rest your arms on the pad with a low cable in your hands. Curl up with no swinging, then lower slowly.','Apoya los brazos en el cojín con una polea baja en las manos. Sube sin balanceo y baja despacio.','Biceps (short head)=Bíceps (cabeza corta), Brachialis=Braquial',{anchor:LOWA,gearAdd:LOWG});
+cab('singlecablecurl','cablecurl','Single-arm cable curl','Curl de bíceps en polea a una mano',4,'Face a low cable with one handle. Keep your elbow at your side, curl up, and lower slowly.','De frente a una polea baja con un agarre, mantén el codo pegado al costado, sube y baja despacio.','Biceps (peak)=Bíceps (pico), Brachialis=Braquial');
+cab('highcablecurl',null,'High cable curl','Curl en polea alta',4,'Stand between two high cables with your arms out like a double biceps pose. Curl the handles toward your head, then lower slowly.','De pie entre dos poleas altas con los brazos abiertos, como una pose de bíceps. Lleva los agarres hacia la cabeza y baja despacio.','Biceps (peak)=Bíceps (pico), Biceps (long head)=Bíceps (cabeza larga)',{front:true,poses:[[56,14,68,15,80,16,54,38,55,54,54,70],[56,14,68,15,72,3,54,38,55,54,54,70]]});
+cab('cableez','cablecurl','Cable EZ-bar curl','Curl con barra EZ en polea',4,'Attach an EZ-bar to a low cable. Curl it up with your elbows at your sides, then lower slowly under tension.','Pon una barra EZ en una polea baja. Súbela con los codos pegados al cuerpo y baja despacio manteniendo la tensión.','Biceps (both heads)=Bíceps (ambas cabezas), Brachialis=Braquial');
+/* triceps */
+cab('machinetri',null,'Seated triceps extension machine','Extensión de tríceps sentado en máquina',5,'Sit with your upper arms on the pad. Press the handles down until your arms are straight, then return slowly.','Siéntate con la parte alta de los brazos en el cojín. Empuja los agarres hacia abajo hasta estirar los brazos y vuelve despacio.','Triceps (long head)=Tríceps (cabeza larga), Triceps (lateral head)=Tríceps (cabeza lateral)',{gear:SEATBACK,poses:[[32,34,38,40,44,28,30,58,50,56,50,70],[32,34,38,46,54,54,30,58,50,56,50,70]]});
+cab('dipmachine','chestdip','Dip machine','Fondos en máquina',5,'Sit upright with your hands on the handles. Press down until your arms are straight, then return slowly.','Siéntate derecho con las manos en los agarres. Empuja hacia abajo hasta estirar los brazos y vuelve despacio.','Triceps=Tríceps, Lower chest=Pecho inferior, Front delts=Deltoides anterior');
+cab('assisteddip','chestdip','Assisted dip machine','Fondos asistidos en máquina',5,'Kneel on the pad. A heavier stack gives more help, so lower the weight as you get stronger. Lower until your elbows reach 90°, then press up.','Arrodíllate en la plataforma. Más peso en la pila da más ayuda, así que bájalo a medida que te fortaleces. Baja hasta 90° de codos y empuja hacia arriba.','Triceps=Tríceps, Lower chest=Pecho inferior, Front delts=Deltoides anterior',{hold:'none'});
+cab('cablekickback','kickback','Cable triceps kickback','Patada de tríceps en polea',5,'Lean forward with your upper arm pinned to your side. Straighten your arm back against the cable, squeeze, and return slowly.','Inclínate al frente con la parte alta del brazo pegada al cuerpo. Estira el brazo hacia atrás contra la polea, aprieta y vuelve despacio.','Triceps (lateral head)=Tríceps (cabeza lateral), Triceps (long head)=Tríceps (cabeza larga)',{anchor:[92,66],gearAdd:Ln(92,50,92,70)+Rc(88,62,8,8)});
+cab('cableskull','skullcrusher','Cable skull crusher','Rompecráneos en polea',5,'Lie back with a low cable behind your head. Bend only at the elbows to lower the handle, then extend your arms up.','Acuéstate con una polea baja detrás de la cabeza. Flexiona solo los codos para bajar el agarre y estira los brazos hacia arriba.','Triceps (long head)=Tríceps (cabeza larga), Triceps (medial head)=Tríceps (cabeza medial)',{anchor:[4,66],gearAdd:Ln(4,50,4,70)+Rc(0,62,8,8)});
+cab('vbar','pushdown','V-bar pushdown','Extensión de tríceps con agarre en V',5,'Hold the V-handle at chest height with your elbows at your sides. Push down until your arms are straight, then rise slowly.','Toma el agarre en V a la altura del pecho con los codos pegados al cuerpo. Empuja hacia abajo hasta estirar los brazos y sube despacio.','Triceps (lateral head)=Tríceps (cabeza lateral), Triceps (medial head)=Tríceps (cabeza medial)');
+cab('crossbodytri','singlepushdown','Cross-body cable triceps extension','Extensión de tríceps cruzada en polea',5,'Hold a high cable handle across your body. Keep your elbow tucked and push the handle down and across.','Toma el agarre de una polea alta cruzando el cuerpo. Mantén el codo pegado y empújalo hacia abajo y hacia el lado contrario.','Triceps (lateral head)=Tríceps (cabeza lateral), Triceps (medial head)=Tríceps (cabeza medial)');
+/* legs */
+cab('singlelegext','legext','Single-leg extension','Extensión de pierna a una pierna',2,'Sit back with one shin under the pad. Straighten that leg fully, pause, and lower slowly. Then switch legs.','Siéntate con una espinilla bajo el rodillo. Estira esa pierna por completo, pausa y baja despacio. Luego cambia de pierna.','Quads (all four heads)=Cuádriceps (las cuatro cabezas), Vastus medialis=Vasto medial',{hold:'none'});
+cab('beltsquat','hacksquat','Belt squat machine','Sentadilla con cinturón en máquina',2,'Hook the belt on your hips. Squat down with an upright torso, then drive through your feet to stand tall.','Engancha el cinturón en la cadera. Baja con el torso erguido y empuja con los pies para ponerte de pie.','Quads=Cuádriceps, Glutes=Glúteos, Adductors=Aductores',{hold:'none'});
+cab('pendulum','hacksquat','Pendulum squat machine','Sentadilla péndulo en máquina',2,'Stand on the platform with the pads on your shoulders. Squat deep along the curved path, then stand back up.','Párate en la plataforma con los cojines sobre los hombros. Baja profundo por la trayectoria curva y vuelve a subir.','Quads=Cuádriceps, Glutes=Glúteos',{hold:'none'});
+cab('smithsplit','bulgarian','Smith machine split squat','Sentadilla dividida en máquina Smith',2,'Put your back foot on a bench with the bar on your shoulders. Lower straight down, then press through your front heel.','Apoya el pie trasero en un banco con la barra sobre los hombros. Baja en línea recta y empuja con el talón delantero.','Quads=Cuádriceps, Glutes=Glúteos, Adductors=Aductores',{kind:'free',hold:'bar'});
+cab('smithlunge','lunge','Smith machine lunge','Zancada en máquina Smith',2,'Step one foot forward under the bar. Lower your back knee toward the floor, then push back up.','Da un paso con un pie al frente bajo la barra. Baja la rodilla trasera hacia el suelo y empuja para subir.','Quads=Cuádriceps, Glutes=Glúteos, Hamstrings=Isquiotibiales',{kind:'free',hold:'bar'});
+cab('cablesquat','goblet','Cable squat','Sentadilla en polea',2,'Hold a low cable handle at your chest. Sit down between your legs, chest up, then stand tall.','Sostén el agarre de una polea baja en el pecho. Baja entre las piernas con el pecho arriba y ponte de pie.','Quads=Cuádriceps, Glutes=Glúteos, Core=Core',{anchor:LOWA,gear:LOWG});
+cab('cableadduct','cableabduct','Cable hip adduction','Aducción de cadera en polea',2,'Strap the cable to your inside ankle. Swing that leg across your body, squeeze your inner thigh, and return slowly.','Sujeta la polea al tobillo interior. Lleva esa pierna hacia el otro lado del cuerpo, aprieta la parte interna del muslo y vuelve despacio.','Adductors=Aductores, Inner thigh=Muslo interno',{hold:'none'});
+cab('cablerdl','rdl','Cable Romanian deadlift','Peso muerto rumano en polea',8,'Hold a low cable bar at your thighs. Push your hips back with a flat back until you feel your hamstrings stretch, then stand tall.','Sostén una barra de polea baja en los muslos. Lleva la cadera atrás con la espalda recta hasta sentir el estiramiento de los isquiotibiales y ponte de pie.','Hamstrings=Isquiotibiales, Glutes=Glúteos, Lower back=Espalda baja',{anchor:LOWA,gear:LOWG});
+cab('standingcurl',null,'Standing leg curl machine','Curl femoral de pie en máquina',8,'Lean on the pad with the roller behind one ankle. Curl your heel toward your glute, then lower slowly. Switch legs.','Apóyate en el cojín con el rodillo detrás de un tobillo. Lleva el talón hacia el glúteo y baja despacio. Cambia de pierna.','Hamstrings (biceps femoris)=Isquiotibiales (bíceps femoral), Calves=Pantorrillas',{hold:'none',gear:Ln(72,24,72,70)+Rc(68,20,8,4),poses:[[56,16,62,26,68,34,50,38,51,54,50,70],[56,16,62,26,68,34,50,38,52,56,38,60]]});
+cab('glutedrive','hipthrust','Glute drive machine','Empuje de cadera en máquina',9,'Sit with your upper back on the pad and the belt over your hips. Drive your hips up, squeeze your glutes, and lower slowly.','Siéntate con la espalda alta en el cojín y el cinturón sobre la cadera. Sube la cadera, aprieta los glúteos y baja despacio.','Glutes=Glúteos, Hamstrings=Isquiotibiales',{hold:'none'});
+cab('smithhip','hipthrust','Smith machine hip thrust','Empuje de cadera en máquina Smith',9,'Rest your upper back on a bench with the bar on your hips. Drive up along the rails and squeeze at the top.','Apoya la espalda alta en un banco con la barra sobre la cadera. Sube por los rieles y aprieta arriba.','Glutes=Glúteos, Hamstrings=Isquiotibiales',{kind:'free',hold:'bar'});
+cab('kickbackmachine','glutekick','Glute kickback machine','Patada de glúteo en máquina',9,'Lean on the chest pad and place one foot on the plate. Push back and up with your heel, squeeze, and return slowly.','Apóyate en el cojín del pecho y pon un pie en la placa. Empuja hacia atrás y arriba con el talón, aprieta y vuelve despacio.','Glutes (maximus)=Glúteo mayor, Hamstrings=Isquiotibiales',{hold:'none'});
+/* calves, core, forearms */
+cab('calfmachine','calfstand','Standing calf raise machine','Elevación de talones de pie en máquina',10,'Set the pads on your shoulders and the balls of your feet on the edge. Rise onto your toes, pause, and lower into a deep stretch.','Pon los cojines sobre los hombros y la punta de los pies en el borde. Sube sobre las puntas, pausa y baja hasta un buen estiramiento.','Calves (gastrocnemius)=Pantorrillas (gastrocnemio)',{hold:'none',gearAdd:Pd(42,24,58,24)});
+cab('smithcalf','calfstand','Smith machine calf raise','Elevación de talones en máquina Smith',10,'Stand on a block with the bar on your shoulders. Rise onto your toes, pause, and lower slowly.','Párate sobre un bloque con la barra en los hombros. Sube sobre las puntas, pausa y baja despacio.','Calves (gastrocnemius)=Pantorrillas (gastrocnemio)',{kind:'free',hold:'bar'});
+cab('abmachine',null,'Ab crunch machine','Crunch abdominal en máquina',6,'Sit with the pads against your chest or shoulders. Curl your ribs toward your hips, pause, and return slowly.','Siéntate con los cojines contra el pecho o los hombros. Lleva las costillas hacia la cadera, pausa y vuelve despacio.','Upper abs=Abdomen superior, Rectus abdominis=Recto abdominal',{gear:SEATBACK,poses:[[32,32,38,44,44,34,30,58,50,56,50,70],[42,40,46,48,50,40,30,58,50,56,50,70]]});
+cab('cablesidebend',null,'Cable side bend','Inclinación lateral en polea',7,'Stand beside a low cable with the handle in one hand. Bend sideways at your waist, then return upright.','De pie junto a una polea baja con el agarre en una mano, inclínate hacia el lado desde la cintura y vuelve a la posición erguida.','Obliques=Oblicuos, Deep core=Core profundo',{front:true,poses:[[56,14,57,28,57,42,54,38,55,54,54,70],[62,16,60,30,59,42,54,38,55,54,54,70]]});
+cab('captainknee','hangknee','Captain’s chair knee raise','Elevación de rodillas en silla romana',7,'Rest your forearms on the pads and your back on the pad. Raise your knees toward your chest, then lower slowly.','Apoya los antebrazos y la espalda en los cojines. Sube las rodillas hacia el pecho y baja despacio.','Lower abs=Abdomen inferior, Hip flexors=Flexores de cadera',{kind:'free',hold:'none'});
+cab('cablerevcurl','revcurl','Cable reverse curl','Curl inverso en polea',11,'Face a low cable with an overhand grip. Curl the bar up with your elbows at your sides, then lower slowly.','De frente a una polea baja con agarre prono, sube la barra con los codos pegados al cuerpo y baja despacio.','Forearms (brachioradialis)=Antebrazos (braquiorradial), Biceps=Bíceps',{anchor:LOWA,gear:LOWG});
+cab('cablerevwrist','revwristcurl','Cable reverse wrist curl','Curl de muñeca inverso en polea',11,'Rest your forearms on a bench with palms down, holding a low cable handle. Lift your hands up, then lower slowly.','Apoya los antebrazos en un banco con las palmas hacia abajo, sosteniendo una polea baja. Sube las manos y baja despacio.','Forearm extensors=Extensores del antebrazo, Grip=Agarre',{anchor:LOWA,gearAdd:LOWG});
+/* redrawn positions: forearms on the thighs for wrist curls, bar behind the body, supported and inverted rows */
+function redraw(id,poses,gear,anchor){var it=LIBMAP[id];if(!it)return;it.poses=poses;if(gear!==undefined)it.gear=gear;if(anchor!==undefined)it.anchor=anchor;}
+var WR_UP=[[38,36,46,52,62,58,30,58,52,56,52,70],[38,36,46,52,62,48,30,58,52,56,52,70]],WR_DN=[[38,36,46,52,62,56,30,58,52,56,52,70],[38,36,46,52,62,46,30,58,52,56,52,70]];
+redraw('wristcurl',WR_UP);redraw('cablewrist',WR_UP);redraw('revwristcurl',WR_DN);redraw('cablerevwrist',WR_DN);
+redraw('behindwrist',[[50,14,46,28,42,42,50,38,51,54,50,70],[50,14,46,28,41,36,50,38,51,54,50,70]],'');
+redraw('invrow',[[26,50,27,42,26,33,52,56,68,60,84,68],[26,40,34,40,26,33,52,50,68,56,84,68]],Ln(36,30,36,70)+Ln(36,30,14,30));
+redraw('sealrow',[[40,36,43,48,44,60,20,52,22,62,22,70],[40,36,32,44,38,48,20,52,22,62,22,70]],Pd(26,58,46,40)+Ln(30,62,30,70)+Ln(46,42,46,70));
+redraw('dbrow',LIBMAP.dbrow&&LIBMAP.dbrow.poses,'<line class="limb" x1="60" y1="34" x2="72" y2="52"/>'+Rc(66,52,24,5)+Ln(70,57,70,70)+Ln(86,57,86,70));
+redraw('landminerow',LIBMAP.landminerow&&LIBMAP.landminerow.poses,Ln(96,68,56,57));
+var LG=[50,28,50,42,50,56],STAND=[50,14,50,28,50,42,50,38,51,54,50,70,49,54,48,70],LUNGE=[50,28,50,42,50,56,50,52,66,52,66,70,44,66,28,68];
+redraw('lunge',[STAND,LUNGE]);redraw('walkinglunge',[STAND,LUNGE]);redraw('revlunge',[STAND,LUNGE]);redraw('smithlunge',[STAND,LUNGE]);
+redraw('curtsy',[STAND,[50,28,50,42,50,56,50,52,62,54,62,70,40,64,34,68]]);
+redraw('latlunge',[STAND,[44,28,50,36,54,34,36,54,52,54,50,70,60,58,74,70]]);
+redraw('stepup',[[50,16,50,30,50,44,50,40,62,46,66,56,50,56,48,70],[66,12,66,26,66,40,66,36,66,46,66,56,74,44,72,54]],Rc(54,56,34,14));
+redraw('sissy',[[50,14,50,28,50,42,50,38,51,54,50,70],[34,26,40,34,48,32,42,46,62,54,54,70]]);
+redraw('sledpush',[[58,28,68,36,74,46,44,46,58,54,60,70,40,58,30,68],[58,28,68,36,74,46,44,46,40,58,30,68,58,54,60,70]],Rc(74,44,16,22)+Ln(78,66,90,66));
 function holdSVG(it,x,y){
   if(it.hold==='bar')return '<circle class="barc" cx="'+x+'" cy="'+y+'" r="6.5"/><circle class="barn" cx="'+x+'" cy="'+y+'" r="2"/>';
   if(it.hold==='db')return '<circle class="barc" cx="'+x+'" cy="'+y+'" r="4.5"/>';
@@ -852,6 +943,7 @@ function drawPose(it,p,gi){
   if(it.front)return drawFront(it,p,gi);
   var g=Array.isArray(it.gear)?(it.gear[gi]||it.gear[0]):it.gear,s=g||'';
   if(p.length>12)s+='<polyline class="far" points="'+p[6]+','+p[7]+' '+p[12]+','+p[13]+' '+p[14]+','+p[15]+'"/>';
+  else if(p[11]>=64&&Math.abs(p[10]-p[8])<40)s+='<polyline class="far" points="'+(p[6]-2)+','+p[7]+' '+(p[8]+4)+','+(p[9]-1)+' '+(p[10]+6)+','+p[11]+'"/>';
   var dx=p[0]-p[6],dy=p[1]-p[7],l=Math.sqrt(dx*dx+dy*dy)||1,hx=(p[0]+dx/l*8).toFixed(1),hy=(p[1]+dy/l*8).toFixed(1);
   if(it.anchor)s+='<line class="cab" x1="'+p[4]+'" y1="'+p[5]+'" x2="'+it.anchor[0]+'" y2="'+it.anchor[1]+'"/><circle class="eqf" cx="'+it.anchor[0]+'" cy="'+it.anchor[1]+'" r="3"/>';
   s+='<polyline class="limb" points="'+p[10]+','+p[11]+' '+p[8]+','+p[9]+' '+p[6]+','+p[7]+' '+p[0]+','+p[1]+'"/>';
@@ -859,8 +951,44 @@ function drawPose(it,p,gi){
   s+='<circle class="head" cx="'+hx+'" cy="'+hy+'" r="5.5"/>';
   if(it.hold==='bar')s+='<circle class="barc" cx="'+p[4]+'" cy="'+p[5]+'" r="6.5"/><circle class="barn" cx="'+p[4]+'" cy="'+p[5]+'" r="2"/>';
   else if(it.hold==='db')s+='<circle class="barc" cx="'+p[4]+'" cy="'+p[5]+'" r="4.5"/>';
+  else if(it.hold==='dbh')s+='<rect class="barc" x="'+(p[4]-6)+'" y="'+(p[5]-2.5)+'" width="12" height="5" rx="2"/>';
   else if(it.hold==='handle')s+='<circle class="barc" cx="'+p[4]+'" cy="'+p[5]+'" r="3.5"/>';
   return s;
+}
+/* two-bone limb solver: keeps bone lengths steady while the body moves between positions */
+function limbSign(a,m,b){return ((b[0]-a[0])*(m[1]-a[1])-(b[1]-a[1])*(m[0]-a[0]))>=0?1:-1;}
+function limbSolve(a,b,u,l,sg){
+  var dx=b[0]-a[0],dy=b[1]-a[1],d=Math.sqrt(dx*dx+dy*dy)||0.001,mx=u+l-0.01,mn=Math.abs(u-l)+0.01;
+  var dc=Math.min(Math.max(d,mn),mx),al=(u*u-l*l+dc*dc)/(2*dc),h=Math.sqrt(Math.max(u*u-al*al,0));
+  return [a[0]+dx/d*al-dy/d*h*sg,a[1]+dy/d*al+dx/d*h*sg];
+}
+function limbInfo(p0,p1,ai,mi,bi){
+  function pt(p,i){return [p[i],p[i+1]];}
+  function len(a,b){return Math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]));}
+  var A0=pt(p0,ai),M0=pt(p0,mi),B0=pt(p0,bi),A1=pt(p1,ai),M1=pt(p1,mi),B1=pt(p1,bi);
+  var c0=Math.abs((B0[0]-A0[0])*(M0[1]-A0[1])-(B0[1]-A0[1])*(M0[0]-A0[0])),c1=Math.abs((B1[0]-A1[0])*(M1[1]-A1[1])-(B1[1]-A1[1])*(M1[0]-A1[0]));
+  return {u0:len(A0,M0),l0:len(M0,B0),u1:len(A1,M1),l1:len(M1,B1),sg:c0>=c1?limbSign(A0,M0,B0):limbSign(A1,M1,B1)};
+}
+function blendPose(a,b,k,info){
+  var o=a.map(function(v,i){return v+(b[i]-v)*k;});
+  info.forEach(function(f){
+    var A=[o[f.a],o[f.a+1]],B=[o[f.b],o[f.b+1]],u=f.u0+(f.u1-f.u0)*k,l=f.l0+(f.l1-f.l0)*k,m=limbSolve(A,B,u,l,f.sg);
+    o[f.m]=m[0];o[f.m+1]=m[1];
+  });
+  return o;
+}
+function padFar(p,q){return (q.length>12&&p.length<=12)?p.concat([p[8]-2,p[9],p[10]-2,p[11]]):p;}
+function animPoses(it){
+  if(it.__ap)return it.__ap;
+  var a=it.poses[0],b=it.poses[1];it.__ap=[padFar(a,b),padFar(b,a)];return it.__ap;
+}
+function poseInfo(it){
+  if(it.__pi)return it.__pi;
+  var ap=animPoses(it),a=ap[0],b=ap[1],r=[];
+  [[0,2,4],[6,8,10]].concat(a.length>12&&b.length>12?[[6,12,14]]:[]).forEach(function(t){
+    var f=limbInfo(a,b,t[0],t[1],t[2]);f.a=t[0];f.m=t[1];f.b=t[2];r.push(f);
+  });
+  it.__pi=r;return r;
 }
 function figSVG(it){
   var n=it.poses.length,off=n===1?54:0,s='';
@@ -868,6 +996,34 @@ function figSVG(it){
     s+='<g transform="translate('+(off+i*108)+',0)"><line class="fl" x1="2" x2="98" y1="70" y2="70"/>'+(n>1?'<text class="num" x="6" y="-6">'+(i+1)+'</text>':'')+drawPose(it,p,i)+'</g>';
   });
   return '<svg class="fig" viewBox="0 -16 208 96" role="img" aria-label="'+esc(it.en)+' – '+esc(it.es)+(n>1?', '+esc(tr('start and end positions')):'')+'">'+s+'</svg>';
+}
+/* animated demo: the figure glides between the start and end positions */
+function reduceMotion(){try{return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){return false;}}
+var animRAF=0,animOn=!reduceMotion(),animK=0;
+function lerpPose(a,b,k){return a.map(function(v,i){return v+(b[i]-v)*k;});}
+function animFigHTML(it){
+  if(it.poses.length<2)return figSVG(it);
+  return '<svg class="fig animfig" viewBox="0 -16 100 96" role="img" aria-label="'+esc(it.en)+' – '+esc(it.es)+', '+esc(tr('animated demo'))+'"><line class="fl" x1="2" x2="98" y1="70" y2="70"/><g id="animg">'+drawPose(it,animPoses(it)[0],0)+'</g></svg>'+
+    '<button type="button" class="animbtn" id="animBtn" data-action="animtoggle" aria-pressed="'+(!animOn)+'">'+tr(animOn?'Pause animation':'Play animation')+'</button>';
+}
+function drawAnim(it,k){
+  var g=document.getElementById('animg');if(!g)return;
+  var ap=animPoses(it);g.innerHTML=drawPose(it,blendPose(ap[0],ap[1],k,poseInfo(it)),k>0.5?1:0);
+}
+function startAnim(){
+  cancelAnimationFrame(animRAF);
+  var g=document.getElementById('animg');if(!g||!overviewOpen||!animOn)return;
+  var e=ex[route()],it=e&&libFor(e);if(!it||it.poses.length<2)return;
+  var T=3400,t0=performance.now();
+  function step(now){
+    var cur=document.getElementById('animg');
+    if(cur!==g||!overviewOpen||!animOn)return;
+    var u=((now-t0)%T)/T,k;
+    if(u<0.08)k=0;else if(u<0.42)k=(u-0.08)/0.34;else if(u<0.52)k=1;else if(u<0.94)k=1-(u-0.52)/0.42;else k=0;
+    k=k*k*(3-2*k);animK=k;drawAnim(it,k);
+    animRAF=requestAnimationFrame(step);
+  }
+  animRAF=requestAnimationFrame(step);
 }
 var libQ='',libG='0';
 function strip(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
@@ -900,7 +1056,7 @@ function openLib(id){
 }
 function demoHTML(e){
   var it=libFor(e);if(!it)return '';
-  return '<section class="demo" aria-label="'+esc(tr('How to do this exercise'))+'"><div>'+figSVG(it)+'</div><div class="demo-txt"><div class="demo-names"><b>'+esc(ename(it))+'</b><span lang="'+olang()+'">'+esc(eother(it))+'</span></div>'+
+  return '<section class="demo" aria-label="'+esc(tr('How to do this exercise'))+'"><div class="demo-fig">'+animFigHTML(it)+'</div><div class="demo-txt"><div class="demo-names"><b>'+esc(ename(it))+'</b><span lang="'+olang()+'">'+esc(eother(it))+'</span></div>'+
     '<p>'+esc(it.cue[lang==='es'?1:0])+'</p><div class="demo-parts"><span class="kicker">'+tr('Muscles worked')+'</span>'+partsHTML(it)+'</div></div></section>';
 }
 function addSection(){
@@ -1173,6 +1329,7 @@ function render(){
       try{el.focus({preventScroll:true});if(ss!=null)el.setSelectionRange(ss,se);}catch(e){}
     }
   }
+  startAnim();
 }
 
 function normTpl(a){
@@ -1854,6 +2011,10 @@ document.addEventListener('click',function(ev){
     var ovp=document.getElementById('overview');if(ovp)ovp.hidden=!overviewOpen;
     t.setAttribute('aria-expanded',String(overviewOpen));
     t.innerHTML=tr(overviewOpen?'Hide overview':'See overview')+'<span aria-hidden="true">'+(overviewOpen?' ▴':' ▾')+'</span>';
+    startAnim();
+  }
+  else if(a==='animtoggle'){
+    animOn=!animOn;t.setAttribute('aria-pressed',String(!animOn));t.textContent=tr(animOn?'Pause animation':'Play animation');startAnim();
   }
   else if(a==='note-edit'){
     var ne=ex[t.getAttribute('data-ex')],ns=ne&&ne.entries.filter(function(s){return s.i===id;})[0];
